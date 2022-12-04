@@ -1,0 +1,75 @@
+﻿using MassTransit;
+using Microsoft.AspNetCore.Mvc;
+using Orders.Common;
+using Orders.Service.Dtos.Costumer;
+using Orders.Service.Entities;
+
+namespace Orders.Service.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class CostumersController : ControllerBase
+{
+    private readonly IRepository<Client> _repository;
+
+    private readonly IPublishEndpoint _publishEndpoint;
+
+    public CostumersController(IRepository<Client> repository, IPublishEndpoint publishEndpoint)
+    {
+        _repository = repository;
+        _publishEndpoint = publishEndpoint;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<ClientDto>>> GetAsync()
+    {
+        return Ok(await _repository.GetAllAsync().AsDtoAsync());
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ClientDto>> GetAsync(Guid id)
+    {
+        if (await _repository.GetAsync(id) is not { } item)
+        {
+            return NotFound();
+        }
+
+        return item.AsDto();
+    }
+
+    [HttpPost]
+    public async Task<ActionResult> PostAsync(CreateClientDto dto)
+    {
+        var item = dto.CreateCostumer();
+        await _repository.CreateAsync(item);
+        await _publishEndpoint.Publish(new Contracts.ClientContract.ClientCreated(item.Id, item.Name, item.Description));
+        return CreatedAtAction(nameof(GetAsync).Replace("Async", ""), new { id = item.Id }, item);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutAsync(Guid id, UpdateClientDto updateClientDto)
+    {
+        if (await _repository.GetAsync(id) is not { })
+        {
+            return NotFound();
+        }
+
+        var existing = updateClientDto.CreateCostumer(id);
+        await _repository.UpdateAsync(existing);
+        await _publishEndpoint.Publish(new Contracts.ClientContract.ClientUpdated(existing.Id, existing.Name, existing.Description));
+        return Ok();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(Guid id)
+    {
+        if (_repository.GetAsync(id) is not { })
+        {
+            return NotFound();
+        }
+
+        await _repository.RemoveAsync(id);
+        await _publishEndpoint.Publish(new Contracts.ClientContract.ClientDeleted(id));
+        return NoContent();
+    }
+}

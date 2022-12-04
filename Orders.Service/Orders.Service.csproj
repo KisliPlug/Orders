@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Orders.Common\Orders.Common.csproj" />
+      <ProjectReference Include="..\Orders.Contracts\Orders.Contracts.csproj" />
+    </ItemGroup>
+        <ItemGroup>
+          <ProjectReference Include="..\Orders.CodeGen\CodeGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        </ItemGroup>
+        <ItemGroup>
+          <Compile Remove="Dtos\Order\**" />
+        </ItemGroup>
+        <ItemGroup>
+          <EmbeddedResource Remove="Dtos\Order\**" />
+        </ItemGroup>
+        <ItemGroup>
+          <None Remove="Dtos\Order\**" />
+        </ItemGroup>
+        <ItemGroup>
+          <Content Remove="Dtos\Order\**" />
+        </ItemGroup>
+</Project>
