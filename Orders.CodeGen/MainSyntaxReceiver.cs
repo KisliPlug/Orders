@@ -1,4 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -67,24 +71,14 @@ public static class NodeExtensions
                {
                    ClassDeclarationSyntax cl  => cl.Identifier.Text
                  , TypeDeclarationSyntax tp   => tp.Identifier.Text
+                 , PropertyDeclarationSyntax tp   => tp.Identifier.Text
                  , MemberDeclarationSyntax mb => mb.ToString()
                  , ParameterSyntax mb         => mb.Identifier.ToString()
                  , _                          => syntaxNode.ToString().Split(" ").First()
                };
     }
 
-    public static string GetAttributes(this SyntaxNode syntaxNode)
-    {
-        
-        return syntaxNode switch
-               {
-                   ClassDeclarationSyntax cl  => cl.Identifier.Text
-                 , TypeDeclarationSyntax tp   => tp.Identifier.Text
-                 , MemberDeclarationSyntax mb => mb.ToString()
-                 , ParameterSyntax mb         => mb.Identifier.ToString()
-                 , _                          => syntaxNode.ToString().Split(" ").First()
-               };
-    }
+    
 
     public static void Log(this object data, string fileName = "debug.log")
     {

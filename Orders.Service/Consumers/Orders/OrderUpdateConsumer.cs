@@ -2,9 +2,9 @@
 using Orders.Common;
 using Orders.Service.Entities;
 
-namespace Orders.Service.Consumers;
+namespace Orders.Service.Consumers.Orders;
 
-public class OrderUpdateConsumer : IConsumer<Contracts.OrderContract.OrderUpdated>
+public class OrderUpdateConsumer : IConsumer<Contracts.OrderContract.OrderUpdate>
 {
     private readonly IRepository<Order> _repository;
 
@@ -13,7 +13,7 @@ public class OrderUpdateConsumer : IConsumer<Contracts.OrderContract.OrderUpdate
         _repository = repository;
     }
 
-    public async Task Consume(ConsumeContext<Contracts.OrderContract.OrderUpdated> context)
+    public async Task Consume(ConsumeContext<Contracts.OrderContract.OrderUpdate> context)
     {
         var message = context.Message;
         if (await _repository.GetAsync(message.Id) is not { } order)

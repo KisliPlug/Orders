@@ -11,22 +11,27 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Orders.Common\Orders.Common.csproj" />
-      <ProjectReference Include="..\Orders.Contracts\Orders.Contracts.csproj" />
+ 
+        <ProjectReference Include="..\Orders.CodeGen\Orders.CodeGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+ 
+        <ProjectReference Include="..\Orders.Common\Orders.Common.csproj" />
+        <ProjectReference Include="..\Orders.Contracts\Orders.Contracts.csproj" />
     </ItemGroup>
-        <ItemGroup>
-          <ProjectReference Include="..\Orders.CodeGen\CodeGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-        </ItemGroup>
-        <ItemGroup>
-          <Compile Remove="Dtos\Order\**" />
-        </ItemGroup>
-        <ItemGroup>
-          <EmbeddedResource Remove="Dtos\Order\**" />
-        </ItemGroup>
-        <ItemGroup>
-          <None Remove="Dtos\Order\**" />
-        </ItemGroup>
-        <ItemGroup>
-          <Content Remove="Dtos\Order\**" />
-        </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="Dtos\Order\**" />
+        <Compile Remove="Dtos\Client\**" />
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Remove="Dtos\Order\**" />
+        <EmbeddedResource Remove="Dtos\Client\**" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Remove="Dtos\Order\**" />
+        <None Remove="Dtos\Client\**" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Remove="Dtos\Order\**" />
+        <Content Remove="Dtos\Client\**" />
+    </ItemGroup>
 </Project>

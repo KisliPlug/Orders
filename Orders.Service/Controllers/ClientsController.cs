@@ -1,7 +1,7 @@
 ﻿using MassTransit;
+using MassTransit.Initializers;
 using Microsoft.AspNetCore.Mvc;
 using Orders.Common;
-using Orders.Service.Dtos.Costumer;
 using Orders.Service.Entities;
 
 namespace Orders.Service.Controllers;
@@ -23,24 +23,24 @@ public class CostumersController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ClientDto>>> GetAsync()
     {
-        return Ok(await _repository.GetAllAsync().AsDtoAsync());
+        return Ok((await _repository.GetAllAsync()).AsClientDto());
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<ClientDto>> GetAsync(Guid id)
-    {
+    {  
         if (await _repository.GetAsync(id) is not { } item)
         {
             return NotFound();
         }
 
-        return item.AsDto();
+        return (ClientDto)item;
     }
 
     [HttpPost]
     public async Task<ActionResult> PostAsync(CreateClientDto dto)
     {
-        var item = dto.CreateCostumer();
+        var item =  (Client)dto;
         await _repository.CreateAsync(item);
         await _publishEndpoint.Publish(new Contracts.ClientContract.ClientCreated(item.Id, item.Name, item.Description));
         return CreatedAtAction(nameof(GetAsync).Replace("Async", ""), new { id = item.Id }, item);
@@ -49,14 +49,14 @@ public class CostumersController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> PutAsync(Guid id, UpdateClientDto updateClientDto)
     {
-        if (await _repository.GetAsync(id) is not { })
+        if (await _repository.GetAsync(id) is not { } client)
         {
             return NotFound();
         }
 
-        var existing = updateClientDto.CreateCostumer(id);
-        await _repository.UpdateAsync(existing);
-        await _publishEndpoint.Publish(new Contracts.ClientContract.ClientUpdated(existing.Id, existing.Name, existing.Description));
+        updateClientDto.SetProps(client);
+        await _repository.UpdateAsync(client);
+        await _publishEndpoint.Publish(new Contracts.ClientContract.ClientUpdated(client.Id, client.Name, client.Description));
         return Ok();
     }
 

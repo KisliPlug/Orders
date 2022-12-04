@@ -1,4 +1,8 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Orders.CodeGen;
@@ -15,7 +19,6 @@ public class FillRangeGen : ISourceGenerator
 
     public void Execute(GeneratorExecutionContext context)
     {
-        "Run".Log("debug.log");
         if (context.SyntaxReceiver is not AttributeAggregate receiver)
         {
             return;
@@ -60,18 +63,17 @@ public class FillRangeGen : ISourceGenerator
         var newName = $"{attrValues.First()}{generationData.Record.Identifier}Dto";
         var namecpaceName = GetNamespaceName(generationData.Record);
         List<ParameterSyntax> fields = null;
-        var (membersData, dd) = CollectRecordFields(generationData, attrValues.Skip(1).ToList());
+        var ignoredNames = attrValues.Skip(1).ToList();
+        var (membersData, dd, ignoredFields) = CollectRecordFields(generationData, ignoredNames);
         if (membersData is null || dd is null)
         {
             return ("", "");
         }
 
-        AddOperators(membersData.GetNodeNames(), newName, generationData.Record.Identifier.ToString(), true).Log();
         // {AddOperators(membersData, newName, generationData.Record.Identifier.ToString(), false)}
 
         // {AddProps(membersData, namecpaceName, false)}
         var names = membersData.GetNodeNames().ToArray();
-       
         var body = $@"
 using System.ComponentModel;
 namespace {namecpaceName}
@@ -79,7 +81,12 @@ namespace {namecpaceName}
   public record {newName} 
   {{
   {string.Join("\n", dd)} 
-   {AddOperators(names, newName, generationData.Record.Identifier.ToString(), true)}
+   {AddOperators(names
+               , ignoredFields
+               , newName
+               , generationData.Record.Identifier.ToString()
+               , true )}
+ 
     {AddPropsRecord(names, newName, generationData.Record.Identifier.ToString(), true)}
     {AddPropsRecord(names, newName, generationData.Record.Identifier.ToString(), false)}
   }}
@@ -87,13 +94,18 @@ namespace {namecpaceName}
         return (body, newName);
     }
 
-    public ( List<SyntaxNode>? nodes, List<string>? props) CollectRecordFields(AttributeAggregate.CaptureRec generationData, List<string> ignorProps)
+    public ( List<SyntaxNode>? nodes, List<string>? props, List<SyntaxNode>? ignored) CollectRecordFields(AttributeAggregate.CaptureRec generationData
+                                                                                                        , List<string> ignorProps)
     {
         List<string> dd = new();
         List<SyntaxNode> membersData = new();
+        List<SyntaxNode> ignored = new();
         ;
         if (generationData.Record.Members is { Count: > 0 } members)
         {
+            ignored = members
+                     .Where(x => ignorProps.Any(y => x.ToFullString().Split(" ").Any(z => z.Equals(y))))
+                     .ToList<SyntaxNode>();
             membersData = members
                          .Where(x => !ignorProps.Any(y => x.ToFullString().Split(" ").Any(z => z.Equals(y))))
                          .ToList<SyntaxNode>();
@@ -101,20 +113,23 @@ namespace {namecpaceName}
                             .ToList();
             if (dd.Count < 1)
             {
-                return (null, null);
+                return (null, null, null);
             }
         }
 
         if (generationData.Record.ParameterList is { } pars)
         {
+            ignored = pars.Parameters
+                          .Where(x => ignorProps.Any(y => x.ToFullString().Split(" ").Any(z => z.Equals(y))))
+                          .ToList<SyntaxNode>();
             membersData = pars.Parameters
                               .Where(x => !ignorProps.Any(y => x.ToFullString().Split(" ").Any(z => z.Equals(y))))
                               .ToList<SyntaxNode>();
-            dd = membersData.Select(x => $"{x.GetAttributes()} public {x.GetName()} {{get;init;}}")
+            dd = membersData.Select(x => $"public {x.GetName()} {{get;init;}}")
                             .ToList();
         }
 
-        return (membersData, dd);
+        return (membersData, dd, ignored);
     }
 
     private (string? source, string? fileName)? CreateClass(AttributeAggregate.Capture generationData)
@@ -130,10 +145,14 @@ namespace {namecpaceName}
         var ignorProps = attrValues.Skip(1);
         var newName = $"{attrValues.First()}{generationData.Class.Identifier}Dto";
         var namespaceName = GetNamespaceName(generationData.Class);
-        var fields = generationData.Class
-                                   .Members
-                                   .Where(x => !ignorProps.Any(y => x.ToFullString().Split(" ").Any(z => z.Equals(y))))
-                                   .ToList();
+        var allProps = generationData.Class
+                                     .Members;
+        var ignorPropsSyntax = allProps
+                              .Where(x => ignorProps.Any(y => x.ToFullString().Split(" ").Any(z => z.Equals(y))))
+                              .ToList();
+        var fields = allProps
+                    .Where(x => !ignorProps.Any(y => x.ToFullString().Split(" ").Any(z => z.Equals(y))))
+                    .ToList();
         if (fields.Count < 1)
         {
             return ("", "");
@@ -143,16 +162,50 @@ namespace {namecpaceName}
         var names = fields.GetNodeNames().ToArray();
         var body = $@"
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 namespace {namespaceName}
 {{
   public class {newName}
   {{
      {string.Join("\n\t", fields)}
-       {AddOperators(names, newName, hostClassName, true)}
-    {AddOperators(names, newName, hostClassName, false)}
+    {AddOperators(names
+                , ignorPropsSyntax
+                , newName
+                , hostClassName
+                , true
+                   )}
+    {AddOperators(names
+                , ignorPropsSyntax
+                , newName
+                , hostClassName
+                , false )}
+
+ 
     {AddProps(names, hostClassName, true)}
     {AddProps(names, hostClassName, false)}
    
+  }}
+  public static class {newName}Extensions
+  {{
+   public static {newName} As{newName}(this {hostClassName} entity)
+   {{
+        return ({newName})entity;
+   }}
+
+   public static {hostClassName} As{hostClassName}(this {newName} dto)
+   {{
+        return ({hostClassName})dto;
+   }}
+
+   public static IEnumerable<{newName}> As{newName}(this IEnumerable<{hostClassName}> entity)
+   {{
+        return  entity.Select(x=>x.As{newName}());
+   }}
+
+   public static IEnumerable<{hostClassName}> As{hostClassName}(this IEnumerable<{newName}> dtos)
+   {{
+        return dtos.Select(x=>x.As{hostClassName}());
+   }}
   }}
 }}";
         return (body, newName);
@@ -172,13 +225,24 @@ namespace {namespaceName}
         return retVal;
     }
 
-    private string AddOperators(IEnumerable<string> fields, string from, string to, bool isImplicit)
+    private string AddOperators(IEnumerable<string> fields, IEnumerable<SyntaxNode> ignored, string from, string to, bool fromDto )
     {
         var dataFields = fields
                         .Select(x => $"{x}=b.{x}")
                         .ToList();
-        var toStr = isImplicit ? from : to;
-        var fromStr = isImplicit ? to : from;
+
+        if (!fromDto)
+        {
+            foreach (var s in ignored.Select(AddIgnoredPropGenerator).Where(x => !string.IsNullOrEmpty(x)))
+            {
+                dataFields.Add(s);
+            }
+        }
+       
+
+        var toStr = fromDto ? from : to;
+        var fromStr = fromDto ? to : from;
+        
         return $@"
      public static explicit operator {toStr}({fromStr} b)
     {{
@@ -187,6 +251,45 @@ namespace {namespaceName}
           {string.Join("\t\n,", dataFields)}
         }};
     }}";
+    }
+
+    private string AddIgnoredPropGenerator(SyntaxNode s)
+    {
+        var propType = "";
+        var name = "";
+        if (s is PropertyDeclarationSyntax prop)
+        {
+            propType = prop.Type.ToFullString();
+            name = prop.Identifier.Text;
+        } else if (s is ParameterSyntax parameter)
+        {
+            propType = parameter.Type.ToString();
+            name = parameter.Identifier.Text;
+        }
+
+        string getEnumerableCreation(string en)
+        {
+            return en.Replace($"{nameof(IEnumerable)}", "List");
+        }
+
+        var add = propType.Trim() switch
+                  {
+                      nameof(Guid)                                => $"{nameof(Guid)}.{nameof(Guid.NewGuid)}()"
+                    , nameof(DateTimeOffset)                      => $"{nameof(DateTimeOffset)}.{nameof(DateTimeOffset.Now)}"
+                    , nameof(DateTime)                            => $"{nameof(DateTime)}.{nameof(DateTime.Now)}"
+                    , var str when str.StartsWith("List<")        => $"new()"
+                    , var str when str.StartsWith("Dictionary<")  => $"new()"
+                    , var str when str.StartsWith("IEnumerable<") => $"new {getEnumerableCreation(str)}()"
+                    , _                                           => ""
+                  };
+        
+       
+        if (string.IsNullOrEmpty(add) || string.IsNullOrEmpty(name))
+        {
+            return "";
+        }
+
+        return $"{name}={add}";
     }
 
     private string AddPropsRecord(IEnumerable<string> fields, string pocoName, string dtoName, bool set)
