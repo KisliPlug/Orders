@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using Microsoft.AspNetCore.Mvc;
-using Orders.Service.Entities;
 
 namespace Order.Tests.Moq;
 

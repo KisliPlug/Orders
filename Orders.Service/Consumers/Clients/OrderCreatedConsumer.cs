@@ -1,7 +1,6 @@
 ﻿using MassTransit;
 using Orders.Common;
 using Orders.Service.Entities;
-using ZstdSharp.Unsafe;
 
 namespace Orders.Service.Consumers.Clients;
 

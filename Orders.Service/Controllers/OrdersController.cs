@@ -1,5 +1,4 @@
 ﻿using MassTransit;
-using MassTransit.Initializers;
 using Microsoft.AspNetCore.Mvc;
 using Orders.Common;
 using Orders.Service.Entities;

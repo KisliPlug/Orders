@@ -1,10 +1,5 @@
-﻿using Bogus;
-using MassTransit;
-using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
-using Moq;
+﻿using MassTransit;
 using Order.Tests.Moq;
-using Orders.Common;
 using Orders.Service.Controllers;
 using Orders.Service.Entities;
 
