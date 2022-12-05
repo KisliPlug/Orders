@@ -3,17 +3,14 @@ using MongoDB.Driver;
 
 namespace Orders.Common.MongoDb;
 
-public class MongoRepository<T> : IRepository<T> where T:IEntity
+public class MongoRepository<T> : IRepository<T> where T : IEntity
 {
-    
-
     private readonly IMongoCollection<T> _dbCollection;
 
     private readonly FilterDefinitionBuilder<T> _filterDefinitionBuilder = Builders<T>.Filter;
 
-    public MongoRepository(IMongoDatabase database,string collectionName)
+    public MongoRepository(IMongoDatabase database, string collectionName)
     {
-      
         _dbCollection = database.GetCollection<T>(collectionName);
     }
 
@@ -58,5 +55,5 @@ public class MongoRepository<T> : IRepository<T> where T:IEntity
     {
         var filter = _filterDefinitionBuilder.Eq(x => x.Id, id);
         await _dbCollection.DeleteManyAsync(filter);
-    }    
+    }
 }

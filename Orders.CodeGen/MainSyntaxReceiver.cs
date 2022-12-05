@@ -69,16 +69,14 @@ public static class NodeExtensions
     {
         return syntaxNode switch
                {
-                   ClassDeclarationSyntax cl  => cl.Identifier.Text
-                 , TypeDeclarationSyntax tp   => tp.Identifier.Text
-                 , PropertyDeclarationSyntax tp   => tp.Identifier.Text
-                 , MemberDeclarationSyntax mb => mb.ToString()
-                 , ParameterSyntax mb         => mb.Identifier.ToString()
-                 , _                          => syntaxNode.ToString().Split(" ").First()
+                   ClassDeclarationSyntax cl    => cl.Identifier.Text
+                 , TypeDeclarationSyntax tp     => tp.Identifier.Text
+                 , PropertyDeclarationSyntax tp => tp.Identifier.Text
+                 , MemberDeclarationSyntax mb   => mb.ToString()
+                 , ParameterSyntax mb           => mb.Identifier.ToString()
+                 , _                            => syntaxNode.ToString().Split(" ").First()
                };
     }
-
-    
 
     public static void Log(this object data, string fileName = "debug.log")
     {
@@ -91,14 +89,16 @@ public static class NodeExtensions
                 {
                     logData.Append(e.ToString() + "\n");
                 }
-            } else
+            }
+            else
             {
                 logData.Append(data.ToString());
             }
 
             using var str = new StreamWriter(@$"F:\REPOS\Orders\Orders.CodeGen\Output\{fileName}", append: true);
             str.WriteLine(logData.ToString());
-        } catch (Exception e)
+        }
+        catch (Exception e)
         { }
     }
 }

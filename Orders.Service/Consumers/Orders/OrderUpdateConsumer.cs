@@ -20,7 +20,11 @@ public class OrderUpdateConsumer : IConsumer<Contracts.OrderContract.OrderUpdate
         {
             order = new Order()
                     {
-                        Id = message.Id, ClientId = message.ClientId, Description = message.Description, Price = message.Price, CreationDate =
+                        Id = message.Id
+                      , ClientId = message.ClientId
+                      , Description = message.Description
+                      , Price = message.Price
+                      , CreationDate =
                             DateTimeOffset.Now
                       , DueDate = message.DueDate
                     };

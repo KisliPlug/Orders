@@ -23,25 +23,25 @@ public class ClientsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ClientDto>>> GetAsync()
     {
-        var results = await _repository.GetAllAsync().Select(x =>  x.AsClientDto());
+        var results = await _repository.GetAllAsync().Select(x => x.AsClientDto());
         return Ok(results);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<ClientDto>> GetAsync(Guid id)
-    {  
+    {
         if (await _repository.GetAsync(id) is not { } item)
         {
             return NotFound();
         }
 
-        return  Ok(item.AsClientDto());
+        return Ok(item.AsClientDto());
     }
 
     [HttpPost]
     public async Task<ActionResult> PostAsync(CreateClientDto dto)
     {
-        var item =  (Client)dto;
+        var item = (Client)dto;
         await _repository.CreateAsync(item);
         await _publishEndpoint.Publish(new Contracts.ClientContract.ClientCreated(item.Id, item.Name, item.Description));
         return CreatedAtAction(nameof(GetAsync).Replace("Async", ""), new { id = item.Id }, item);

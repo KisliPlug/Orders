@@ -11,7 +11,7 @@ public class MoqRepository<T> : IRepository<T> where T : class, IEntity
 
     public MoqRepository(Action<T, T> update)
     {
-        var faker = new Faker<T>().RuleFor(x => x.Id,f=>Guid.NewGuid());
+        var faker = new Faker<T>().RuleFor(x => x.Id, f => Guid.NewGuid());
         _orders = new List<T>(faker.Generate(5));
         _update = update;
     }

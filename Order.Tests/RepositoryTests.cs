@@ -44,11 +44,12 @@ public class RepositoryTests
         var client = (await clientController.GetAsync()).GetElements().FirstOrDefault();
         var createOrderDto = new CreateOrderDto
                              {
-                                 Description = "Test", Price = 500, ClientId = client.Id
+                                 Description = "Test"
+                               , Price = 500
+                               , ClientId = client.Id
                                , DueDate = DateTimeOffset.Now
                              };
         //Act
-
         await ordersController.PostAsync(createOrderDto);
         client = (await clientController.GetAsync(client.Id)).GetElement();
         //Assert

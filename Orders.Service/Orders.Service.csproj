@@ -1,37 +1,37 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3"/>
+  </ItemGroup>
 
-    <ItemGroup>
- 
-        <ProjectReference Include="..\Orders.CodeGen\Orders.CodeGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
- 
-        <ProjectReference Include="..\Orders.Common\Orders.Common.csproj" />
-        <ProjectReference Include="..\Orders.Contracts\Orders.Contracts.csproj" />
-    </ItemGroup>
+  <ItemGroup>
 
-    <ItemGroup>
-        <Compile Remove="Dtos\Order\**" />
-        <Compile Remove="Dtos\Client\**" />
-    </ItemGroup>
-    <ItemGroup>
-        <EmbeddedResource Remove="Dtos\Order\**" />
-        <EmbeddedResource Remove="Dtos\Client\**" />
-    </ItemGroup>
-    <ItemGroup>
-        <None Remove="Dtos\Order\**" />
-        <None Remove="Dtos\Client\**" />
-    </ItemGroup>
-    <ItemGroup>
-        <Content Remove="Dtos\Order\**" />
-        <Content Remove="Dtos\Client\**" />
-    </ItemGroup>
+    <ProjectReference Include="..\Orders.CodeGen\Orders.CodeGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+
+    <ProjectReference Include="..\Orders.Common\Orders.Common.csproj"/>
+    <ProjectReference Include="..\Orders.Contracts\Orders.Contracts.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Dtos\Order\**"/>
+    <Compile Remove="Dtos\Client\**"/>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Dtos\Order\**"/>
+    <EmbeddedResource Remove="Dtos\Client\**"/>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Dtos\Order\**"/>
+    <None Remove="Dtos\Client\**"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Dtos\Order\**"/>
+    <Content Remove="Dtos\Client\**"/>
+  </ItemGroup>
 </Project>

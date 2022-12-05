@@ -42,7 +42,8 @@ public class FillRangeGen : ISourceGenerator
                     context.AddSource($"{fileName}.g.cs", source);
                 }
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.Log("error.log");
         }
@@ -78,15 +79,15 @@ public class FillRangeGen : ISourceGenerator
 using System.ComponentModel;
 namespace {namecpaceName}
 {{
-  public record {newName} 
+  public record {newName}
   {{
-  {string.Join("\n", dd)} 
+  {string.Join("\n", dd)}
    {AddOperators(names
                , ignoredFields
                , newName
                , generationData.Record.Identifier.ToString()
-               , true )}
- 
+               , true)}
+
     {AddPropsRecord(names, newName, generationData.Record.Identifier.ToString(), true)}
     {AddPropsRecord(names, newName, generationData.Record.Identifier.ToString(), false)}
   }}
@@ -172,18 +173,17 @@ namespace {namespaceName}
                 , ignorPropsSyntax
                 , newName
                 , hostClassName
-                , true
-                   )}
+                , true)}
     {AddOperators(names
                 , ignorPropsSyntax
                 , newName
                 , hostClassName
-                , false )}
+                , false)}
 
- 
+
     {AddProps(names, hostClassName, true)}
     {AddProps(names, hostClassName, false)}
-   
+
   }}
   public static class {newName}Extensions
   {{
@@ -217,7 +217,8 @@ namespace {namespaceName}
         if (classDeclarationSyntax.GetParent<NamespaceDeclarationSyntax>() is { } sp)
         {
             retVal = sp.Name.ToString();
-        } else if (classDeclarationSyntax.GetParent<FileScopedNamespaceDeclarationSyntax>() is { } scp)
+        }
+        else if (classDeclarationSyntax.GetParent<FileScopedNamespaceDeclarationSyntax>() is { } scp)
         {
             retVal = scp.Name.ToString();
         }
@@ -225,12 +226,11 @@ namespace {namespaceName}
         return retVal;
     }
 
-    private string AddOperators(IEnumerable<string> fields, IEnumerable<SyntaxNode> ignored, string from, string to, bool fromDto )
+    private string AddOperators(IEnumerable<string> fields, IEnumerable<SyntaxNode> ignored, string from, string to, bool fromDto)
     {
         var dataFields = fields
                         .Select(x => $"{x}=b.{x}")
                         .ToList();
-
         if (!fromDto)
         {
             foreach (var s in ignored.Select(AddIgnoredPropGenerator).Where(x => !string.IsNullOrEmpty(x)))
@@ -238,11 +238,9 @@ namespace {namespaceName}
                 dataFields.Add(s);
             }
         }
-       
 
         var toStr = fromDto ? from : to;
         var fromStr = fromDto ? to : from;
-        
         return $@"
      public static explicit operator {toStr}({fromStr} b)
     {{
@@ -261,7 +259,8 @@ namespace {namespaceName}
         {
             propType = prop.Type.ToFullString();
             name = prop.Identifier.Text;
-        } else if (s is ParameterSyntax parameter)
+        }
+        else if (s is ParameterSyntax parameter)
         {
             propType = parameter.Type.ToString();
             name = parameter.Identifier.Text;
@@ -282,8 +281,6 @@ namespace {namespaceName}
                     , var str when str.StartsWith("IEnumerable<") => $"new {getEnumerableCreation(str)}()"
                     , _                                           => ""
                   };
-        
-       
         if (string.IsNullOrEmpty(add) || string.IsNullOrEmpty(name))
         {
             return "";
@@ -314,9 +311,9 @@ namespace {namespaceName}
         return $@"
      public {retType} {funcPrefix}Props({dtoName} dto)
     {{
-     
+
            return  {retInditefer} with {{{string.Join("\t\n,", dataFields)}}};
-         
+
     }}";
     }
 
@@ -339,9 +336,9 @@ namespace {namespaceName}
         return $@"
      public   void  {funcPrefix}Props({name} b)
     {{
-     
+
             {string.Join("\t\n", dataFields)}
-         
+
     }}";
     }
 }

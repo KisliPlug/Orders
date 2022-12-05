@@ -62,7 +62,8 @@ public class MoqPublisher : IPublishEndpoint
     private async Task AddOrderToClient(object message)
     {
         if (message is Orders.Contracts.ClientContract.ClientUpdated)
-        { } else if (message is OrderContract.OrderCreated orderCreated)
+        { }
+        else if (message is OrderContract.OrderCreated orderCreated)
         {
             if (await _clientRepo.GetAsync(orderCreated.ClientId) is not { } client)
             {
@@ -82,7 +83,8 @@ public class MoqPublisher : IPublishEndpoint
     public async Task Publish<T>(object message, CancellationToken cancellationToken = new CancellationToken()) where T : class
     {
         if (message is Orders.Contracts.ClientContract.ClientUpdated)
-        { } else if (message is OrderContract.OrderCreated orderCreated)
+        { }
+        else if (message is OrderContract.OrderCreated orderCreated)
         {
             if (await _clientRepo.GetAsync(orderCreated.ClientId) is not { } client)
             {

@@ -11,21 +11,18 @@ namespace Orders.Service.Controllers;
 public class OrdersController : ControllerBase
 {
     private readonly IRepository<Order> _repository;
-  
+
     private readonly IPublishEndpoint _publishEndpoint;
 
-    public OrdersController(IRepository<Order> repository ,IPublishEndpoint publishEndpoint)
+    public OrdersController(IRepository<Order> repository, IPublishEndpoint publishEndpoint)
     {
         _repository = repository;
         _publishEndpoint = publishEndpoint;
-        
-
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<OrderDto>>> GetAsync()
     {
-         
         return Ok((await _repository.GetAllAsync()).AsOrderDto());
     }
 
@@ -36,6 +33,7 @@ public class OrdersController : ControllerBase
         {
             return NotFound();
         }
+
         return (OrderDto)item;
     }
 
@@ -44,8 +42,11 @@ public class OrdersController : ControllerBase
     {
         var item = (Order)dto;
         await _repository.CreateAsync(item);
-        await _publishEndpoint.Publish(new Contracts.OrderContract.OrderCreated(item.Id, item.ClientId, item.Description,item.Price,item.CreationDate));
-
+        await _publishEndpoint.Publish(new Contracts.OrderContract.OrderCreated(item.Id
+                                                                              , item.ClientId
+                                                                              , item.Description
+                                                                              , item.Price
+                                                                              , item.CreationDate));
         return CreatedAtAction(nameof(GetAsync).Replace("Async", ""), new { id = item.Id }, item);
     }
 
@@ -59,8 +60,11 @@ public class OrdersController : ControllerBase
 
         updateOrderDto.SetProps(order);
         await _repository.UpdateAsync(order);
-        
-        await _publishEndpoint.Publish(new Contracts.OrderContract.OrderUpdated(order.Id, order.ClientId, order.Description,order.Price,order.DueDate));
+        await _publishEndpoint.Publish(new Contracts.OrderContract.OrderUpdated(order.Id
+                                                                              , order.ClientId
+                                                                              , order.Description
+                                                                              , order.Price
+                                                                              , order.DueDate));
         return Ok();
     }
 
@@ -71,11 +75,9 @@ public class OrdersController : ControllerBase
         {
             return NotFound();
         }
-        
-        
-        await _publishEndpoint.Publish(new Contracts.OrderContract.OrderDeleted(dto.Id,dto.ClientId ));
-        await _publishEndpoint.Publish(new Contracts.ClientContract.ClientOrderRemove(dto.ClientId,dto.Id));
 
+        await _publishEndpoint.Publish(new Contracts.OrderContract.OrderDeleted(dto.Id, dto.ClientId));
+        await _publishEndpoint.Publish(new Contracts.ClientContract.ClientOrderRemove(dto.ClientId, dto.Id));
         await _repository.RemoveAsync(dto.Id);
         return NoContent();
     }

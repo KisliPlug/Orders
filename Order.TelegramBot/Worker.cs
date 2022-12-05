@@ -28,7 +28,8 @@ public class Worker : BackgroundService
             var cancellationToken = cts.Token;
             var receiverOptions = new ReceiverOptions
                                   {
-                                      AllowedUpdates = { }, // receive all update types
+                                      AllowedUpdates = { }
+                                    , // receive all update types
                                   };
             _bot.StartReceiving(HandleUpdateAsync, HandleErrorAsync, receiverOptions, cancellationToken);
         }

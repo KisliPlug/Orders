@@ -18,7 +18,11 @@ public class OrderCreationConsumer : IConsumer<Contracts.OrderContract.OrderCrea
         var message = context.Message;
         var order = new Order()
                     {
-                        Id = Guid.NewGuid(), ClientId = message.ClientId, Description = message.Description, Price = message.Price, CreationDate =
+                        Id = Guid.NewGuid()
+                      , ClientId = message.ClientId
+                      , Description = message.Description
+                      , Price = message.Price
+                      , CreationDate =
                             DateTimeOffset.Now
                       , DueDate = message.DueDate
                     };

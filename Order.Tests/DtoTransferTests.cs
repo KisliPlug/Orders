@@ -14,13 +14,23 @@ public class DtoTransferTests
                 {
                     new()
                     {
-                        Description = "Description", Id = Guid.NewGuid(), Price = 500, ClientId = Guid.NewGuid(), CreationDate = DateTimeOffset.Now
-                      , DueDate = DateTimeOffset.Now,
+                        Description = "Description"
+                      , Id = Guid.NewGuid()
+                      , Price = 500
+                      , ClientId = Guid.NewGuid()
+                      , CreationDate = DateTimeOffset.Now
+                      , DueDate = DateTimeOffset.Now
+                       ,
                     }
                   , new()
                     {
-                        Description = "Description1", Id = Guid.NewGuid(), Price = 501, ClientId = Guid.NewGuid(), CreationDate = DateTimeOffset.Now
-                      , DueDate = DateTimeOffset.Now,
+                        Description = "Description1"
+                      , Id = Guid.NewGuid()
+                      , Price = 501
+                      , ClientId = Guid.NewGuid()
+                      , CreationDate = DateTimeOffset.Now
+                      , DueDate = DateTimeOffset.Now
+                       ,
                     }
                 }
             ;
@@ -28,15 +38,23 @@ public class DtoTransferTests
                     {
                         new()
                         {
-                            Description = "Description", Id = Guid.NewGuid(), Price = 500, ClientId = Guid.NewGuid()
+                            Description = "Description"
+                          , Id = Guid.NewGuid()
+                          , Price = 500
+                          , ClientId = Guid.NewGuid()
                           , CreationDate = DateTimeOffset.Now
-                          , DueDate = DateTimeOffset.Now,
+                          , DueDate = DateTimeOffset.Now
+                           ,
                         }
                       , new()
                         {
-                            Description = "Description1", Id = Guid.NewGuid(), Price = 501, ClientId = Guid.NewGuid()
+                            Description = "Description1"
+                          , Id = Guid.NewGuid()
+                          , Price = 501
+                          , ClientId = Guid.NewGuid()
                           , CreationDate = DateTimeOffset.Now
-                          , DueDate = DateTimeOffset.Now,
+                          , DueDate = DateTimeOffset.Now
+                           ,
                         }
                     };
         _createDtos = _entities.Select(x => (CreateOrderDto)x).ToList();

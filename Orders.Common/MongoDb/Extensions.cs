@@ -35,8 +35,4 @@ public static class Extensions
                                                                     });
         return collection;
     }
-
-   
-
- 
 }
