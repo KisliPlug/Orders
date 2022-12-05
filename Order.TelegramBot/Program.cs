@@ -1,7 +1,7 @@
 using Order.TelegramBot;
 using Orders.Common.MassTransit;
 using Telegram.Bot;
-
+//Just for showing interaction mechanism
 IHost host = Host.CreateDefaultBuilder(args)
                  .ConfigureServices(services =>
                                     {
