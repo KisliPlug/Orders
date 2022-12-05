@@ -8,13 +8,13 @@ namespace Orders.Service.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class CostumersController : ControllerBase
+public class ClientsController : ControllerBase
 {
     private readonly IRepository<Client> _repository;
 
     private readonly IPublishEndpoint _publishEndpoint;
 
-    public CostumersController(IRepository<Client> repository, IPublishEndpoint publishEndpoint)
+    public ClientsController(IRepository<Client> repository, IPublishEndpoint publishEndpoint)
     {
         _repository = repository;
         _publishEndpoint = publishEndpoint;
@@ -23,7 +23,8 @@ public class CostumersController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ClientDto>>> GetAsync()
     {
-        return Ok((await _repository.GetAllAsync()).AsClientDto());
+        var results = await _repository.GetAllAsync().Select(x =>  x.AsClientDto());
+        return Ok(results);
     }
 
     [HttpGet("{id}")]
@@ -34,7 +35,7 @@ public class CostumersController : ControllerBase
             return NotFound();
         }
 
-        return (ClientDto)item;
+        return  Ok(item.AsClientDto());
     }
 
     [HttpPost]
