@@ -76,25 +76,25 @@ public static class NodeExtensions
 
     public static void Log(this object data, string fileName = "debug.log")
     {
-        try
-        {
-            var logData = new StringBuilder();
-            if (data is IEnumerable list and not string)
-            {
-                foreach (var e in list)
-                {
-                    logData.Append(e.ToString() + "\n");
-                }
-            }
-            else
-            {
-                logData.Append(data.ToString());
-            }
-
-            using var str = new StreamWriter(@$"F:\REPOS\Orders\Orders.CodeGen\Output\{fileName}", append: true);
-            str.WriteLine(logData.ToString());
-        }
-        catch (Exception e)
-        { }
+        // try
+        // {
+        //     var logData = new StringBuilder();
+        //     if (data is IEnumerable list and not string)
+        //     {
+        //         foreach (var e in list)
+        //         {
+        //             logData.Append(e.ToString() + "\n");
+        //         }
+        //     }
+        //     else
+        //     {
+        //         logData.Append(data.ToString());
+        //     }
+        //
+        //     using var str = new StreamWriter(@$"F:\REPOS\Orders\Orders.CodeGen\Output\{fileName}", append: true);
+        //     str.WriteLine(logData.ToString());
+        // }
+        // catch (Exception e)
+        // { }
     }
 }
